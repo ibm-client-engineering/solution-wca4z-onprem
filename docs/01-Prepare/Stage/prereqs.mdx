@@ -1,24 +1,23 @@
 ---
 title: Prerequisites
 description: understand the hardware and software required
+sidebar_position: 1
 custom_edit_url: null
 ---
 
-# Stage
-
-## Prerequisites
+# Prerequisites
 
 The following are VM requirements for a Pilot. As seen in the [Solution Architecture](/Prepare/learn#solution-architecture), the Windows VM will host the ADDI project and database,
 while the Linux VM will host the Z Refactoring Assistant Server.
 
-### Understand - ADDI Project & Database Host
+## Understand - ADDI Project & Database Host
 
-#### **Hardware**
+### Hardware
 - CPU:  Intel Core i5 or equivalent
 - RAM:  32 GB
 - Disk: 35 GB
 
-#### **Platform**
+### Platform
 - OS:
     - Windows Server 2019 (Recommended)
     - Other Options:
@@ -32,7 +31,7 @@ while the Linux VM will host the Z Refactoring Assistant Server.
         - Microsoft SQL Server 2014/2016/2017/2022
         - Db2 Standard Edition 11.5.5.x (see: [fix pack](https://www.ibm.com/support/pages/node/6438025))
 
-#### **Software**
+### Software
 - Eclipse OR IDz:
     - Eclipse:
         - 64 bit
@@ -51,17 +50,17 @@ while the Linux VM will host the Z Refactoring Assistant Server.
     - Mozilla Firefox
     - Microsoft Edge (verion 79 or later)
 
-### Refactor - Z Refactoring Assistant Server
+## Refactor - Z Refactoring Assistant Server
 
-#### **Hardware**
+### Hardware
 - CPU:  4 cores
 - RAM:  16 GB
 - Disk: 500 GB
 
-#### **Platform**
+### Platform
 - OS: Red Hat Enterprise Linux (RHEL) version 8 or later on an AMD64 system
 
-#### **Software**
+### Software
 - Required tools and packages:
     - podman version 4 or later
     - _podman-plugins_ package
@@ -76,14 +75,14 @@ while the Linux VM will host the Z Refactoring Assistant Server.
     - Microsoft Edge (version 79 or later)
 
 
-### Transform
+## Transform
 
 For Transforming Cobol to Java, the only new hardware required is a Db2 instance on the cloud. Additional required software will live on the Windows machine.
 
-#### **Platform**
+### Platform
 - Db2 (on IBM Cloud)
 
-#### **Software**
+### Software
 - IBM Service client 11.5 (64 bit)
 - Data Generator
     - WCA4Z-Data-Generator zip file copied from the Refactoring Assistant to the Windows VM
