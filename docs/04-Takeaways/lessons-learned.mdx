@@ -1,0 +1,114 @@
+---
+title: Lessons Learned
+description: Troubleshooting issues and tips
+custom_edit_url: null
+---
+
+# Lessons Learned
+
+## Troubleshooting
+### Configuration Service in “Stopping”
+#### Symptom: ADDI Configuration service stuck in “Stopping” state.
+
+Resolution:
+Use the Task Manager to kill the Java process that has the Command line `“java -Xmx512M -Djava.library.path=lib/win -cp jar\server-3.1.1.jar;jar\com-ez.ssdp-2.0.0.jar;jar\snappy-java-1.1.8.2.jar;…”`
+
+After that you can refresh the state of the Configuration service in the ADDI dashboard and restart it.
+
+### Refactoring Assistant can’t load artifacts because connection to SQL Server fails
+#### Symptom: Artifacts in RA fail to load and Test connection fails for the SQL Server when entering the 9.x.x.x IP address in IBM Application Discovery -> Configure -> servers and security -> Relational database server
+Resolution:
+The problem is that the server was only bound to the 127.0.0.1 address.
+To change that,
+
+1. From the Start menu, search for ```Configuration Manager``` and open the SQL Server
+Configuration Manager
+2. In the left sidebar, select ```SQL Server Network Configuration``` -> ```Protocols for
+MSSQLSERVER``` , then double click on ```TCP/IP```
+3. In the dialog that opened, go to the IP Addresses tab
+4. Find the section that has the 9.x.x.x IP address of your Windows VM and set
+```Enabled``` to ```yes```.
+5. Click ```Ok``` to save the changes and also click ```Ok``` on the dialog that warns you that a
+restart is necessary.
+6. To perform the restart,
+    1. in the left sidebar of the ```SQL Server Configuration Manager```, select ```SQL Server Services```
+    2. Right click on ```SQL Server (MSSQLSERVER)``` and select ```Restart```
+
+:::tip
+If you are still getting errors create an inbound rule for your SQL server port (default 1433) in “Windows Defender Firewall with Advanced Security”
+:::
+### Failing to initialize the orient DB container
+#### Symptom: OrientDB error statements appear during RA start up
+```java
+Loaded messages from i18n/en.properties
+Generating certificate signing request
+Generating a RSA private key
+..............................+++++
+..................+++++
+writing new private key to 'orientdb.key'
+-----
+Generating signed certificate
+Signature ok
+subject=CN = orientdb, O = IBM
+Getting CA Private Key
+=======================================================================================================================
+What is the OrientDB password? This password will be required every time Refactoring Assistant for IBM z/OS is started.
+=======================================================================================================================
+Password: 
+Starting OrientDB...
+✔ docker.io/library/orientdb:3.2.18
+Trying to pull docker.io/library/orientdb:3.2.18...
+WARN[0032] Failed, retrying in 1s ... (1/3). Error: initializing source docker://orientdb:3.2.18: reading manifest 3.2.18 in docker.io/library/orientdb: toomanyrequests: You have reached your pull rate limit. You may increase the limit by authenticating and upgrading: https://www.docker.com/increase-rate-limit 
+
+
+WARN[0064] Failed, retrying in 1s ... (2/3). Error: initializing source docker://orientdb:3.2.18: reading manifest 3.2.18 in docker.io/library/orientdb: toomanyrequests: You have reached your pull rate limit. You may increase the limit by authenticating and upgrading: https://www.docker.com/increase-rate-limit
+```
+       
+Try using the following commands in your Linux env:
+```bash
+podman login docker-eu.artifactory.swg-devops.com
+podman pull docker-eu.artifactory.swg-devops.com/sys-nazare-cicd-team-wca4z-private-docker-local/orientdb:3.2.18
+```
+Commands above will need your API Key, see How-to get your artifactory API key
+
+Then try again 
+```bash
+./start.sh
+```
+
+<!-- ## Usage
+### Extract a service using Refactoring Assistant
+1. In a browser, open the Refactoring Assistant web app: https://\<IP address of your RHEL VM\>:9443
+2. Select “Log in with Email” and provide tester@servicedesigner.com / password
+3. Click Create Workspace
+4. Enter a name and select your ADDI project from the list
+5. Click Create
+6. Use the search bar to select an ar4fact to analyze
+7. In the graph, click on the context menu of a program (the three dots in the top right corner) -> Identify conditional statements
+8. Right click on any of the highlighted program snippets -> Slice on conditional statement to new workbook
+9. Enter a workbook name and click Save
+10. Click the context menu of the workbook (the three dots next to Status: New) and select Export
+    1. As Export format select “ZIP (COBOL and JSON)”
+    2. Choose a file name
+    3. Click Save -->
+
+## Other “How Tos”
+
+### How-to get your SQL Server IP address and port
+1. In your SQL Server Configuration Manager
+2. In the left pane, expand “SQL Server Network Configuration”
+3. Select “Protocols for MSSQLSERVER”
+4. In the right pane, right click “TCP/IP” and select “Properties”
+5. Select the IP Addresses tab
+6. Take note of your IP 9.x and TCP port
+
+### Re-installing Refactoring Assistant
+If you already have RA installed but want to reinstall it:
+1. Go to the directory where you installed Refactoring Assistant (e.g., /root/refactoring-assistant).
+2. Run ./stop.sh all to stop all containers
+3. Delete the current podman images except for the orientdb image
+    1. See all images: podman images
+    2. Delete them one by one: podman rmi \<image id\> Then follow the instructions to install and configure RA
+        :::note
+        You don’t need to do the “Additional sections using HTTPS” again
+        :::
