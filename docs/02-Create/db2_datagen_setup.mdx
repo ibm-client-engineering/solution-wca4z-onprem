@@ -1,0 +1,187 @@
+---
+title: Db2 & Data Gen Setup
+description: Setup and Configuration for Transform
+sidebar_position: 3
+custom_edit_url: null
+---
+
+# Db2 & Data Gen Setup
+
+This setup is required to perform the **Transform** use case.
+
+## Provisioning WCA service & cloud Db2 database ( Techzone )
+
+A DB2 instance will be provisioned for you in the techzone ibm cloud account.
+
+### Configure DB2 Cloud
+1. Once the instance is ready, click on the instance name to go to the Details page
+2. Go to **Service credentials** -> **New credential to create new credentials**
+    1. These will be used later to connect ADDI to this database: *username*, *password*, *hostname* and *port*. By expanding the section you can see the contents
+3. Follow the [Db2 for LUX prerequisites guide](https://www.ibm.com/docs/en/addi/6.1.3?topic=configurations-db2-luw-linux-unix-windows-prerequisites)
+
+Extract and install the IBM Service client 11.5 (Windows x64 version) on the Windows VM.
+This should allow you to connect ADDI to the IBM Cloud DB2 instance. 
+
+4. Continue to the [Testing DB2 connectivity from ADDI](#testing-db2-connectivity-from-addi) section
+
+## Provisioning watsonx Code Assistant service and cloud Db2 database ( Non - Techzone )
+Provisioning watsonx Code Assistant in IBM Cloud
+Follow the instructions in techzone to get access to and set up the watsonx Code Assistant service to use transformation in a POC.
+
+### Create the DB2 instance
+1. Log in to IBM Cloud using your IBM ID
+2. Go to https://cloud.ibm.com/catalog/services/db2
+3. Select Enterprise plan
+4. Enter a recognizable name for your instance, enter this into the “Service name” field
+5. Select default values for the rest of the fields
+6. Agree to the license terms and click **Create**
+7. Go to the Databases section of https://cloud.ibm.com/resources and wait until your instance is ready
+
+### Configure DB2 Cloud
+1. Once the instance is ready, click on the instance name to go to the Details page
+2. Go to **Service credentials** -> **New credential to create new credentials**
+    1. These will be used later to connect ADDI to this database: **username**, **password**, **hostname** and **port**. By expanding the section you can see the contents
+3. Go the Db2 UI by clicking **Manage** -> **Go to UI**
+4. Click **Ok** on the pop-up to enable the data administration features
+5. To prepare the database, you need to execute a SQL script that you can get from ADDI
+    1. On the Windows VM, go to `C:\Program Files\IBM Application Discovery and Delivery Intelligence\IBM Application Discovery Build Client\Bin\Release\DBScripts`
+    2. *Copy* the contents of the DB2LUW_CreateObjects.sql script
+    3. In the Db2 Cloud UI, click on **Run SQL** icon, from the list of tools in the left
+    4. *Paste* the contents of the script in the empty SQL file, *save* and name it if you want
+    5. Click **Run all**
+    6. Wait for the script to complete (can take up to 20 min)
+    7. Verify all script steps ran successfully, all must be green Configure ADDI for connect to Db2 Cloud Install and Configure Db2 driver:
+        1. In the Db2 Cloud UI select **administration** -> **connections** -> **Windows**
+        2. Click on **driver list** and click **Download** next to the IBM Data Server Driver Package
+        3. On the **Select fixes** page, select `IBM Data Server Driver Package (Windows/x86-64 64 bit) V11.5.8 Fix Pack 0`
+        4. Click **continue**
+        5. Select `Download using your browser (HTTPS)`
+        6. Click **continue**
+        7. Download the `v11.5.8_ntx64_dsdriver_ALL_LANG.exe` to your Windows VM
+        8. Install the driver using the default options
+        9. Open a command prompt on your Windows VM and enter the following commands (you can get the host name and port number from the Db2 Cloud UI 
+        at administration -> connections -> Windows):
+            ```
+            db2cli writecfg add -database bludb -host <Db2 hostname> -port <port>
+
+            ===============================================================================
+            db2cli writecfg completed successfully.
+            ===============================================================================
+
+            db2cli writecfg add -dsn dashdb -database bludb -host <Db2 hostname> -port <port>
+
+
+            ===============================================================================
+            db2cli writecfg completed successfully.
+            ===============================================================================
+
+            db2cli writecfg add -database bludb -host <Db2 hostname> -port <port> -parameter "SecurityTransportMode=SSL"
+                
+
+            ===============================================================================
+            db2cli writecfg completed successfully.
+            ===============================================================================
+            ```
+### Testing DB2 connectivity from ADDI
+1. From the ADDI dashboard, go to **Configure** -> `name of your environment` -> **Servers and security** -> **Relational database server**
+    1. Click **Add**
+    2. Enter a name
+    3. Select `IBM Db2` as database server type
+    4. Enter the Db2 Cloud *hostname* (you can get both hostname and port number from administration -> connections -> Windows in the Db2 Cloud UI)
+    5. Enter the Db2 Cloud *port* number
+    6. Check **Use TLS**
+    7. Enter the *name* of the database
+    8. Enter the *username* and *password* from the credentials of the Db2 Cloud instance
+    9. Click **Test connection** to check if everything works
+    10. If the test is successful, click **Save**
+
+### Create a COBOL services ADDI project that uses Db2 Cloud
+After you have defined the Cloud Db2 database to ADDI, you can now create an ADDI project and associate it with the Db2 Cloud database. This project is 
+for the COBOL services that will be transformed to Java by the AI. For transformation to work means scanning and populating the Cloud database with 
+metadata about those COBOL services.
+
+1. Create a new project
+    1. Open the IBM Application Discovery Build Client
+    2. Go to **File** -> **New Project**
+    3. Choose `Mainframe main languages` as project type
+    4. Enter a project name
+    5. Select `IBM DB2 LUW` as DB Type and for Server Name select your previously created Db2 Cloud instance
+    6. Check **Attach to database**
+    7. Enter the database name
+    8. Click **Next**.
+    9. For the project folders you can accept the default and click **Finish**
+2. Add project files
+    1. *Clone* the COBOL services Git repo that you created to the Windows VM. Unless you have already added some code, you should have empty directories 
+    for the COBOL source, copybooks, and DDL.
+    2. In the Windows file explorer go to the project path `C:\IBM AD\Mainframe Projects\<Your Project Name>`
+    3. *Copy* Cobol programs directory to zOS Cobol and Cobol copybooks to Cobol Include
+    4. In the Build Client, right click on **zOS Cobol** -> **Add all files from folder** -> Check that the Folder path is the one where you copied the 
+    Cobol programs, then click **OK**
+    5. Do the same for Cobol Include
+3. Build the project (**Build** -> **Build Project**)
+    1. When asked if you want to run the CHECK project first, select `No`
+    2. When asked if you’re sure you want to perform the build because it will erase the database, select `Yes`
+4. Go to the ADDI dashboard -> **Configure** -> *Select your environment* -> **Services** -> **File Service** -> **Add +**
+5. Insert the (same) project path for both Remote and Local
+6. Click **Save**
+7. In the ADDI dashboard restart the File service
+
+
+## Setting up the Data Generator
+The Data Generator component is supplied as a zip file with the Refactoring Assistant. When you download the Refactoring Assistant and unzip it, you 
+should see a `WCA4Z-Data-Generator` zip file.
+
+Install Data Generator
+
+1. Copy the `WCA4Z-Data-Generator` zip file to your Windows VM.
+2. Unzip the file (**Right click** --> **Extract All**...) using `C:\Program Files\IBM Application Discovery and Delivery Intelligence` as the destination folder
+3. After the extraction is done, you should have a new folder `WCA4Z Data Generator `in `C:\Program Files\IBM Application Discovery and Delivery Intelligence`
+
+### Configure Data Generator
+You should have already set up project synchronization for ADDI, but a sample sync file is shipped with the data generator in case you need it. The end 
+to end scenario includes instructions on how to update the synchronization file to include the COBOL services Git repo. So for now, you need to configure 
+the data generator to know which ADDI project you are using for COBOL services, the location of the cloned Git repository and the location of the DDL 
+within the cloned Git repository.
+
+1. Go to `C:\Program Files\IBM Application Discovery and Delivery Intelligence\WCA4Z Data Generator` and open the `conf.properties` file
+    1. Edit the values to match your Configuration:
+        1. **ADDI_PROJECT_NAME** should have the name of the ADDI COBOL services project you created earlier
+        2. **ADDI_PROJECTS_FOLDER** is the folder where ADDI places all your project files
+        3. **PROJECT_GITHUB_CLONE_FOLDER** is the folder where you cloned the Github project that contains the COBOL source code, e.g., `C:\git\wca4z-extracted-services`
+        4. **DDL_FOLDER** is the DDL folder inside the Github project, e.g., `C:\git\wca4z-extracted-services\DDL`
+
+    In summary, here is an example of a completed `conf.propertie`s file:
+        ```
+        ADDI_PROJECT_NAME=ExtractedServices1
+        ADDI_PROJECTS_FOLDER=C:\IBM AD\Mainframe Projects
+        PROJECT_GITHUB_CLONE_FOLDER=C:\git\wca4z-extracted-services
+        DDL_FOLDER=C:\git\wca4z-extracted-services\DDL
+        ```
+2. Open a command prompt and go to `C:\Program Files\IBM Application Discovery and Delivery Intelligence\WCA4Z Data Generator`
+3. Enter `automation.bat` to run the script. Note that if the cloned Git repo isn’t populated with content because you are going to do the end to end 
+scenario, then you don’t need to do this step at this time..
+4. In case of any error, you can consult the `runControlFlowGenerator.log` file, that contains the output of the script execution
+
+## Z Open Editor VS Code extension
+To use the generative AI capabili4es to transform COBOL to Java, you need to install Visual Studio Code. It’s free to download from the Internet. Once 
+installed, you can use the Extensions marketplace to install the Z Open Editor extension from IBM and the Java Language Server extension from RedHat. 
+The Z Open Editor extension gives you support for COBOL editing and working with watsonx Code Assistant. The Java extension gives you support for working
+ with Java. VS Code has Git support built in.
+
+### Install the VS Code extension:
+1. Open VS Code and go to the *Extensions* section (in the left side bar, click on the four little squares)
+2. Search for `Z Open Editor` and click **Install**.
+3. The installation starts automatically.
+4. If the extension is disabled after the installation, this is probably because the workspace isn’t trusted yet:
+    1. Click on the little shield symbol
+    2. In the new tab that opens click on `Trust Workspace`
+5. The extension should now be enabled
+6. Close the window to make the sections go into effect
+
+### Configure the extension
+1. In the Welcome to Z Open Editor welcome page, expand the section `New: IBM watsonx Code Assistant for Z in Z Open Editor` and check the box to enable 
+watsonx Code Assistant support.
+2. Go to the *Explorer* view and you should see a section called *IBM WATSONX CODE ASSISTANT FOR Z* in the Explorer view.
+3. Click on the cog wheel to add your API key. You created your key when you set up the watsonx Code Assistant service. If you ever want to delete your 
+API key, simply enter a blank to reset.
+You are now ready to start walking through a use case to refactor and transform a COBOL service to Java. The end to end use case uses GenAPP, a sample Application.
