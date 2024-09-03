@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([[5901],{1921:s=>{s.exports=JSON.parse('{"label":"sprint","permalink":"/solution-wca4z-onprem/flight-logs/tags/sprint","allTagsPath":"/solution-wca4z-onprem/flight-logs/tags","count":1,"unlisted":false}')}}]);

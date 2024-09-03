@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([[377],{9164:e=>{e.exports=JSON.parse('{"permalink":"/solution-wca4z-onprem/flight-logs","page":1,"postsPerPage":1,"totalPages":1,"totalCount":1,"blogDescription":"Blog","blogTitle":"Flight Logs"}')}}]);

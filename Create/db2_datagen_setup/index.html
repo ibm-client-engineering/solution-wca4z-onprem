@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="docs-wrapper plugin-docs plugin-id-default docs-version-current docs-doc-page docs-doc-id-Create/db2_datagen_setup" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.1.0">
+<title data-rh="true">Db2 &amp; Data Gen Setup | WCA4Z On-Prem</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://ibm-client-engineering.github.io/solution-wca4z-onprem/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://ibm-client-engineering.github.io/solution-wca4z-onprem/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://ibm-client-engineering.github.io/solution-wca4z-onprem/Create/db2_datagen_setup"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="keywords" content="ibm client engineering, open solutions library"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Db2 &amp; Data Gen Setup | WCA4Z On-Prem"><meta data-rh="true" name="description" content="Setup and Configuration for Transform"><meta data-rh="true" property="og:description" content="Setup and Configuration for Transform"><link data-rh="true" rel="icon" href="/solution-wca4z-onprem/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://ibm-client-engineering.github.io/solution-wca4z-onprem/Create/db2_datagen_setup"><link data-rh="true" rel="alternate" href="https://ibm-client-engineering.github.io/solution-wca4z-onprem/Create/db2_datagen_setup" hreflang="en"><link data-rh="true" rel="alternate" href="https://ibm-client-engineering.github.io/solution-wca4z-onprem/Create/db2_datagen_setup" hreflang="x-default"><link rel="alternate" type="application/rss+xml" href="/solution-wca4z-onprem/flight-logs/rss.xml" title="WCA4Z On-Prem RSS Feed">
+<link rel="alternate" type="application/atom+xml" href="/solution-wca4z-onprem/flight-logs/atom.xml" title="WCA4Z On-Prem Atom Feed">
+
+
+
+
+
+
+<link rel="preconnect" href="https://www.google-analytics.com">
+<link rel="preconnect" href="https://www.googletagmanager.com">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GB0XWXF3GE"></script>
+<script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-GB0XWXF3GE",{anonymize_ip:!0})</script><link rel="stylesheet" href="/solution-wca4z-onprem/assets/css/styles.284b6b33.css">
+<script src="/solution-wca4z-onprem/assets/js/runtime~main.b9e09982.js" defer="defer"></script>
+<script src="/solution-wca4z-onprem/assets/js/main.6e28a542.js" defer="defer"></script>
+</head>
+<body class="navigation-with-keyboard" data-theme="light">
+<script>!function(){function t(t){document.documentElement.setAttribute("data-theme",t)}var e=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return localStorage.getItem("theme")}catch(t){}}();t(null!==e?e:"light")}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="navbar navbar--fixed-top"><div class="navbar__inner"><div class="navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/solution-wca4z-onprem/"><div class="navbar__logo"><img src="/solution-wca4z-onprem/img/logo.svg" alt="IBM Client Engineering Logo" class="themedComponent_mlkZ themedComponent--light_NVdE" height="200" width="200"><img src="/solution-wca4z-onprem/img/logo-dark.svg" alt="IBM Client Engineering Logo" class="themedComponent_mlkZ themedComponent--dark_xIcU" height="200" width="200"></div><b class="navbar__title text--truncate">| WCA4Z On-Prem</b></a></div><div class="navbar__items navbar__items--right"><a class="navbar__item navbar__link" href="/solution-wca4z-onprem/flight-logs">Flight Logs</a><a href="https://github.com/ibm-client-engineering/solution-wca4z-onprem" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link header-github-link"></a><div class="navbarSearchContainer_Bca1"><div class="dsla-search-wrapper"><div class="dsla-search-field" data-tags="default,docs-default-current"></div></div></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="main-wrapper mainWrapper_z2l0"><div class="docsWrapper_hBAB"><button aria-label="Scroll back to top" class="clean-btn theme-back-to-top-button backToTopButton_sjWU" type="button"></button><div class="docRoot_UBD9"><aside class="theme-doc-sidebar-container docSidebarContainer_YfHR"><div class="sidebarViewport_aRkj"><div class="sidebar_njMd"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/solution-wca4z-onprem/">WCA4Z On-Prem</a></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" aria-expanded="false" href="/solution-wca4z-onprem/Prepare/learn">Prepare</a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret menu__link--active" aria-expanded="true" href="/solution-wca4z-onprem/Create/windows_setup">Create</a></div><ul style="display:block;overflow:visible;height:auto" class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/solution-wca4z-onprem/Create/windows_setup">Windows VM Setup</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/solution-wca4z-onprem/Create/linux_setup">Linux VM Setup</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" tabindex="0" href="/solution-wca4z-onprem/Create/db2_datagen_setup">Db2 &amp; Data Gen Setup</a></li></ul></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" aria-expanded="false" href="/solution-wca4z-onprem/Use Cases/understand">Use Cases</a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" aria-expanded="false" href="/solution-wca4z-onprem/Takeaways/lessons-learned">Takeaways</a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" aria-expanded="false" href="/solution-wca4z-onprem/Resources/references">Resources</a></div></li></ul></nav></div></div></aside><main class="docMainContainer_TBSr"><div class="container padding-top--md padding-bottom--lg"><div class="row"><div class="col docItemCol_VOVn"><div class="docItemContainer_Djhp"><article><nav class="theme-doc-breadcrumbs breadcrumbsContainer_Z_bl" aria-label="Breadcrumbs"><ul class="breadcrumbs" itemscope="" itemtype="https://schema.org/BreadcrumbList"><li class="breadcrumbs__item"><a aria-label="Home page" class="breadcrumbs__link" href="/solution-wca4z-onprem/"><svg viewBox="0 0 24 24" class="breadcrumbHomeIcon_YNFT"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z" fill="currentColor"></path></svg></a></li><li class="breadcrumbs__item"><span class="breadcrumbs__link">Create</span><meta itemprop="position" content="1"></li><li itemscope="" itemprop="itemListElement" itemtype="https://schema.org/ListItem" class="breadcrumbs__item breadcrumbs__item--active"><span class="breadcrumbs__link" itemprop="name">Db2 &amp; Data Gen Setup</span><meta itemprop="position" content="2"></li></ul></nav><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_ITEo"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><div class="theme-doc-markdown markdown"><h1>Db2 &amp; Data Gen Setup</h1>
+<p>This setup is required to perform the <strong>Transform</strong> use case.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="provisioning-wca-service--cloud-db2-database--techzone-">Provisioning WCA service &amp; cloud Db2 database ( Techzone )<a href="#provisioning-wca-service--cloud-db2-database--techzone-" class="hash-link" aria-label="Direct link to Provisioning WCA service &amp; cloud Db2 database ( Techzone )" title="Direct link to Provisioning WCA service &amp; cloud Db2 database ( Techzone )">​</a></h2>
+<p>A DB2 instance will be provisioned for you in the techzone ibm cloud account.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="configure-db2-cloud">Configure DB2 Cloud<a href="#configure-db2-cloud" class="hash-link" aria-label="Direct link to Configure DB2 Cloud" title="Direct link to Configure DB2 Cloud">​</a></h3>
+<ol>
+<li>Once the instance is ready, click on the instance name to go to the Details page</li>
+<li>Go to <strong>Service credentials</strong> -&gt; <strong>New credential to create new credentials</strong>
+<ol>
+<li>These will be used later to connect ADDI to this database: <em>username</em>, <em>password</em>, <em>hostname</em> and <em>port</em>. By expanding the section you can see the contents</li>
+</ol>
+</li>
+<li>Follow the <a href="https://www.ibm.com/docs/en/addi/6.1.3?topic=configurations-db2-luw-linux-unix-windows-prerequisites" target="_blank" rel="noopener noreferrer">Db2 for LUX prerequisites guide</a></li>
+</ol>
+<p>Extract and install the IBM Service client 11.5 (Windows x64 version) on the Windows VM.
+This should allow you to connect ADDI to the IBM Cloud DB2 instance.</p>
+<ol start="4">
+<li>Continue to the <a href="#testing-db2-connectivity-from-addi">Testing DB2 connectivity from ADDI</a> section</li>
+</ol>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="provisioning-watsonx-code-assistant-service-and-cloud-db2-database--non---techzone-">Provisioning watsonx Code Assistant service and cloud Db2 database ( Non - Techzone )<a href="#provisioning-watsonx-code-assistant-service-and-cloud-db2-database--non---techzone-" class="hash-link" aria-label="Direct link to Provisioning watsonx Code Assistant service and cloud Db2 database ( Non - Techzone )" title="Direct link to Provisioning watsonx Code Assistant service and cloud Db2 database ( Non - Techzone )">​</a></h2>
+<p>Provisioning watsonx Code Assistant in IBM Cloud
+Follow the instructions in techzone to get access to and set up the watsonx Code Assistant service to use transformation in a POC.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="create-the-db2-instance">Create the DB2 instance<a href="#create-the-db2-instance" class="hash-link" aria-label="Direct link to Create the DB2 instance" title="Direct link to Create the DB2 instance">​</a></h3>
+<ol>
+<li>Log in to IBM Cloud using your IBM ID</li>
+<li>Go to <a href="https://cloud.ibm.com/catalog/services/db2" target="_blank" rel="noopener noreferrer">https://cloud.ibm.com/catalog/services/db2</a></li>
+<li>Select Enterprise plan</li>
+<li>Enter a recognizable name for your instance, enter this into the “Service name” field</li>
+<li>Select default values for the rest of the fields</li>
+<li>Agree to the license terms and click <strong>Create</strong></li>
+<li>Go to the Databases section of <a href="https://cloud.ibm.com/resources" target="_blank" rel="noopener noreferrer">https://cloud.ibm.com/resources</a> and wait until your instance is ready</li>
+</ol>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="configure-db2-cloud-1">Configure DB2 Cloud<a href="#configure-db2-cloud-1" class="hash-link" aria-label="Direct link to Configure DB2 Cloud" title="Direct link to Configure DB2 Cloud">​</a></h3>
+<ol>
+<li>Once the instance is ready, click on the instance name to go to the Details page</li>
+<li>Go to <strong>Service credentials</strong> -&gt; <strong>New credential to create new credentials</strong>
+<ol>
+<li>These will be used later to connect ADDI to this database: <strong>username</strong>, <strong>password</strong>, <strong>hostname</strong> and <strong>port</strong>. By expanding the section you can see the contents</li>
+</ol>
+</li>
+<li>Go the Db2 UI by clicking <strong>Manage</strong> -&gt; <strong>Go to UI</strong></li>
+<li>Click <strong>Ok</strong> on the pop-up to enable the data administration features</li>
+<li>To prepare the database, you need to execute a SQL script that you can get from ADDI<!-- -->
+<ol>
+<li>On the Windows VM, go to <code>C:\Program Files\IBM Application Discovery and Delivery Intelligence\IBM Application Discovery Build Client\Bin\Release\DBScripts</code></li>
+<li><em>Copy</em> the contents of the DB2LUW_CreateObjects.sql script</li>
+<li>In the Db2 Cloud UI, click on <strong>Run SQL</strong> icon, from the list of tools in the left</li>
+<li><em>Paste</em> the contents of the script in the empty SQL file, <em>save</em> and name it if you want</li>
+<li>Click <strong>Run all</strong></li>
+<li>Wait for the script to complete (can take up to 20 min)</li>
+<li>Verify all script steps ran successfully, all must be green Configure ADDI for connect to Db2 Cloud Install and Configure Db2 driver:<!-- -->
+<ol>
+<li>In the Db2 Cloud UI select <strong>administration</strong> -&gt; <strong>connections</strong> -&gt; <strong>Windows</strong></li>
+<li>Click on <strong>driver list</strong> and click <strong>Download</strong> next to the IBM Data Server Driver Package</li>
+<li>On the <strong>Select fixes</strong> page, select <code>IBM Data Server Driver Package (Windows/x86-64 64 bit) V11.5.8 Fix Pack 0</code></li>
+<li>Click <strong>continue</strong></li>
+<li>Select <code>Download using your browser (HTTPS)</code></li>
+<li>Click <strong>continue</strong></li>
+<li>Download the <code>v11.5.8_ntx64_dsdriver_ALL_LANG.exe</code> to your Windows VM</li>
+<li>Install the driver using the default options</li>
+<li>Open a command prompt on your Windows VM and enter the following commands (you can get the host name and port number from the Db2 Cloud UI
+at administration -&gt; connections -&gt; Windows):<!-- -->
+<div class="codeBlockContainer_Ckt0 theme-code-block" style="--prism-background-color:#282c34;--prism-color:#ffffff"><div class="codeBlockContent_biex"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="background-color:#282c34;color:#ffffff"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#ffffff"><span class="token plain">db2cli writecfg add -database bludb -host &lt;Db2 hostname&gt; -port &lt;port&gt;</span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain">===============================================================================</span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain">db2cli writecfg completed successfully.</span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain">===============================================================================</span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain">db2cli writecfg add -dsn dashdb -database bludb -host &lt;Db2 hostname&gt; -port &lt;port&gt;</span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain">===============================================================================</span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain">db2cli writecfg completed successfully.</span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain">===============================================================================</span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain">db2cli writecfg add -database bludb -host &lt;Db2 hostname&gt; -port &lt;port&gt; -parameter &quot;SecurityTransportMode=SSL&quot;</span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain">    </span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain">===============================================================================</span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain">db2cli writecfg completed successfully.</span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain">===============================================================================</span><br></span></code></pre><div class="buttonGroup__atx"><button type="button" aria-label="Copy code to clipboard" title="Copy" class="clean-btn"><span class="copyButtonIcons_eSgA" aria-hidden="true"><svg viewBox="0 0 24 24" class="copyButtonIcon_y97N"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path></svg><svg viewBox="0 0 24 24" class="copyButtonSuccessIcon_LjdS"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path></svg></span></button></div></div></div>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="testing-db2-connectivity-from-addi">Testing DB2 connectivity from ADDI<a href="#testing-db2-connectivity-from-addi" class="hash-link" aria-label="Direct link to Testing DB2 connectivity from ADDI" title="Direct link to Testing DB2 connectivity from ADDI">​</a></h3>
+<ol>
+<li>From the ADDI dashboard, go to <strong>Configure</strong> -&gt; <code>name of your environment</code> -&gt; <strong>Servers and security</strong> -&gt; <strong>Relational database server</strong>
+<ol>
+<li>Click <strong>Add</strong></li>
+<li>Enter a name</li>
+<li>Select <code>IBM Db2</code> as database server type</li>
+<li>Enter the Db2 Cloud <em>hostname</em> (you can get both hostname and port number from administration -&gt; connections -&gt; Windows in the Db2 Cloud UI)</li>
+<li>Enter the Db2 Cloud <em>port</em> number</li>
+<li>Check <strong>Use TLS</strong></li>
+<li>Enter the <em>name</em> of the database</li>
+<li>Enter the <em>username</em> and <em>password</em> from the credentials of the Db2 Cloud instance</li>
+<li>Click <strong>Test connection</strong> to check if everything works</li>
+<li>If the test is successful, click <strong>Save</strong></li>
+</ol>
+</li>
+</ol>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="create-a-cobol-services-addi-project-that-uses-db2-cloud">Create a COBOL services ADDI project that uses Db2 Cloud<a href="#create-a-cobol-services-addi-project-that-uses-db2-cloud" class="hash-link" aria-label="Direct link to Create a COBOL services ADDI project that uses Db2 Cloud" title="Direct link to Create a COBOL services ADDI project that uses Db2 Cloud">​</a></h3>
+<p>After you have defined the Cloud Db2 database to ADDI, you can now create an ADDI project and associate it with the Db2 Cloud database. This project is
+for the COBOL services that will be transformed to Java by the AI. For transformation to work means scanning and populating the Cloud database with
+metadata about those COBOL services.</p>
+<ol>
+<li>Create a new project<!-- -->
+<ol>
+<li>Open the IBM Application Discovery Build Client</li>
+<li>Go to <strong>File</strong> -&gt; <strong>New Project</strong></li>
+<li>Choose <code>Mainframe main languages</code> as project type</li>
+<li>Enter a project name</li>
+<li>Select <code>IBM DB2 LUW</code> as DB Type and for Server Name select your previously created Db2 Cloud instance</li>
+<li>Check <strong>Attach to database</strong></li>
+<li>Enter the database name</li>
+<li>Click <strong>Next</strong>.</li>
+<li>For the project folders you can accept the default and click <strong>Finish</strong></li>
+</ol>
+</li>
+<li>Add project files<!-- -->
+<ol>
+<li><em>Clone</em> the COBOL services Git repo that you created to the Windows VM. Unless you have already added some code, you should have empty directories
+for the COBOL source, copybooks, and DDL.</li>
+<li>In the Windows file explorer go to the project path <code>C:\IBM AD\Mainframe Projects\&lt;Your Project Name&gt;</code></li>
+<li><em>Copy</em> Cobol programs directory to zOS Cobol and Cobol copybooks to Cobol Include</li>
+<li>In the Build Client, right click on <strong>zOS Cobol</strong> -&gt; <strong>Add all files from folder</strong> -&gt; Check that the Folder path is the one where you copied the
+Cobol programs, then click <strong>OK</strong></li>
+<li>Do the same for Cobol Include</li>
+</ol>
+</li>
+<li>Build the project (<strong>Build</strong> -&gt; <strong>Build Project</strong>)<!-- -->
+<ol>
+<li>When asked if you want to run the CHECK project first, select <code>No</code></li>
+<li>When asked if you’re sure you want to perform the build because it will erase the database, select <code>Yes</code></li>
+</ol>
+</li>
+<li>Go to the ADDI dashboard -&gt; <strong>Configure</strong> -&gt; <em>Select your environment</em> -&gt; <strong>Services</strong> -&gt; <strong>File Service</strong> -&gt; <strong>Add +</strong></li>
+<li>Insert the (same) project path for both Remote and Local</li>
+<li>Click <strong>Save</strong></li>
+<li>In the ADDI dashboard restart the File service</li>
+</ol>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="setting-up-the-data-generator">Setting up the Data Generator<a href="#setting-up-the-data-generator" class="hash-link" aria-label="Direct link to Setting up the Data Generator" title="Direct link to Setting up the Data Generator">​</a></h2>
+<p>The Data Generator component is supplied as a zip file with the Refactoring Assistant. When you download the Refactoring Assistant and unzip it, you
+should see a <code>WCA4Z-Data-Generator</code> zip file.</p>
+<p>Install Data Generator</p>
+<ol>
+<li>Copy the <code>WCA4Z-Data-Generator</code> zip file to your Windows VM.</li>
+<li>Unzip the file (<strong>Right click</strong> --&gt; <strong>Extract All</strong>...) using <code>C:\Program Files\IBM Application Discovery and Delivery Intelligence</code> as the destination folder</li>
+<li>After the extraction is done, you should have a new folder <code>WCA4Z Data Generator </code>in <code>C:\Program Files\IBM Application Discovery and Delivery Intelligence</code></li>
+</ol>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="configure-data-generator">Configure Data Generator<a href="#configure-data-generator" class="hash-link" aria-label="Direct link to Configure Data Generator" title="Direct link to Configure Data Generator">​</a></h3>
+<p>You should have already set up project synchronization for ADDI, but a sample sync file is shipped with the data generator in case you need it. The end
+to end scenario includes instructions on how to update the synchronization file to include the COBOL services Git repo. So for now, you need to configure
+the data generator to know which ADDI project you are using for COBOL services, the location of the cloned Git repository and the location of the DDL
+within the cloned Git repository.</p>
+<ol>
+<li>
+<p>Go to <code>C:\Program Files\IBM Application Discovery and Delivery Intelligence\WCA4Z Data Generator</code> and open the <code>conf.properties</code> file</p>
+<ol>
+<li>Edit the values to match your Configuration:<!-- -->
+<ol>
+<li><strong>ADDI_PROJECT_NAME</strong> should have the name of the ADDI COBOL services project you created earlier</li>
+<li><strong>ADDI_PROJECTS_FOLDER</strong> is the folder where ADDI places all your project files</li>
+<li><strong>PROJECT_GITHUB_CLONE_FOLDER</strong> is the folder where you cloned the Github project that contains the COBOL source code, e.g., <code>C:\git\wca4z-extracted-services</code></li>
+<li><strong>DDL_FOLDER</strong> is the DDL folder inside the Github project, e.g., <code>C:\git\wca4z-extracted-services\DDL</code></li>
+</ol>
+</li>
+</ol>
+<p>In summary, here is an example of a completed <code>conf.propertie</code>s file:</p>
+<div class="codeBlockContainer_Ckt0 theme-code-block" style="--prism-background-color:#282c34;--prism-color:#ffffff"><div class="codeBlockContent_biex"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="background-color:#282c34;color:#ffffff"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#ffffff"><span class="token plain">ADDI_PROJECT_NAME=ExtractedServices1</span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain">ADDI_PROJECTS_FOLDER=C:\IBM AD\Mainframe Projects</span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain">PROJECT_GITHUB_CLONE_FOLDER=C:\git\wca4z-extracted-services</span><br></span><span class="token-line" style="color:#ffffff"><span class="token plain">DDL_FOLDER=C:\git\wca4z-extracted-services\DDL</span><br></span></code></pre><div class="buttonGroup__atx"><button type="button" aria-label="Copy code to clipboard" title="Copy" class="clean-btn"><span class="copyButtonIcons_eSgA" aria-hidden="true"><svg viewBox="0 0 24 24" class="copyButtonIcon_y97N"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path></svg><svg viewBox="0 0 24 24" class="copyButtonSuccessIcon_LjdS"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path></svg></span></button></div></div></div>
+</li>
+<li>
+<p>Open a command prompt and go to <code>C:\Program Files\IBM Application Discovery and Delivery Intelligence\WCA4Z Data Generator</code></p>
+</li>
+<li>
+<p>Enter <code>automation.bat</code> to run the script. Note that if the cloned Git repo isn’t populated with content because you are going to do the end to end
+scenario, then you don’t need to do this step at this time..</p>
+</li>
+<li>
+<p>In case of any error, you can consult the <code>runControlFlowGenerator.log</code> file, that contains the output of the script execution</p>
+</li>
+</ol>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="z-open-editor-vs-code-extension">Z Open Editor VS Code extension<a href="#z-open-editor-vs-code-extension" class="hash-link" aria-label="Direct link to Z Open Editor VS Code extension" title="Direct link to Z Open Editor VS Code extension">​</a></h2>
+<p>To use the generative AI capabili4es to transform COBOL to Java, you need to install Visual Studio Code. It’s free to download from the Internet. Once
+installed, you can use the Extensions marketplace to install the Z Open Editor extension from IBM and the Java Language Server extension from RedHat.
+The Z Open Editor extension gives you support for COBOL editing and working with watsonx Code Assistant. The Java extension gives you support for working
+with Java. VS Code has Git support built in.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="install-the-vs-code-extension">Install the VS Code extension:<a href="#install-the-vs-code-extension" class="hash-link" aria-label="Direct link to Install the VS Code extension:" title="Direct link to Install the VS Code extension:">​</a></h3>
+<ol>
+<li>Open VS Code and go to the <em>Extensions</em> section (in the left side bar, click on the four little squares)</li>
+<li>Search for <code>Z Open Editor</code> and click <strong>Install</strong>.</li>
+<li>The installation starts automatically.</li>
+<li>If the extension is disabled after the installation, this is probably because the workspace isn’t trusted yet:<!-- -->
+<ol>
+<li>Click on the little shield symbol</li>
+<li>In the new tab that opens click on <code>Trust Workspace</code></li>
+</ol>
+</li>
+<li>The extension should now be enabled</li>
+<li>Close the window to make the sections go into effect</li>
+</ol>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="configure-the-extension">Configure the extension<a href="#configure-the-extension" class="hash-link" aria-label="Direct link to Configure the extension" title="Direct link to Configure the extension">​</a></h3>
+<ol>
+<li>In the Welcome to Z Open Editor welcome page, expand the section <code>New: IBM watsonx Code Assistant for Z in Z Open Editor</code> and check the box to enable
+watsonx Code Assistant support.</li>
+<li>Go to the <em>Explorer</em> view and you should see a section called <em>IBM WATSONX CODE ASSISTANT FOR Z</em> in the Explorer view.</li>
+<li>Click on the cog wheel to add your API key. You created your key when you set up the watsonx Code Assistant service. If you ever want to delete your
+API key, simply enter a blank to reset.
+You are now ready to start walking through a use case to refactor and transform a COBOL service to Java. The end to end use case uses GenAPP, a sample Application.</li>
+</ol></div></article><nav class="pagination-nav docusaurus-mt-lg" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/solution-wca4z-onprem/Create/linux_setup"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">Linux VM Setup</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/solution-wca4z-onprem/Use Cases/understand"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Understand</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#provisioning-wca-service--cloud-db2-database--techzone-" class="table-of-contents__link toc-highlight">Provisioning WCA service &amp; cloud Db2 database ( Techzone )</a><ul><li><a href="#configure-db2-cloud" class="table-of-contents__link toc-highlight">Configure DB2 Cloud</a></li></ul></li><li><a href="#provisioning-watsonx-code-assistant-service-and-cloud-db2-database--non---techzone-" class="table-of-contents__link toc-highlight">Provisioning watsonx Code Assistant service and cloud Db2 database ( Non - Techzone )</a><ul><li><a href="#create-the-db2-instance" class="table-of-contents__link toc-highlight">Create the DB2 instance</a></li><li><a href="#configure-db2-cloud-1" class="table-of-contents__link toc-highlight">Configure DB2 Cloud</a></li><li><a href="#testing-db2-connectivity-from-addi" class="table-of-contents__link toc-highlight">Testing DB2 connectivity from ADDI</a></li><li><a href="#create-a-cobol-services-addi-project-that-uses-db2-cloud" class="table-of-contents__link toc-highlight">Create a COBOL services ADDI project that uses Db2 Cloud</a></li></ul></li><li><a href="#setting-up-the-data-generator" class="table-of-contents__link toc-highlight">Setting up the Data Generator</a><ul><li><a href="#configure-data-generator" class="table-of-contents__link toc-highlight">Configure Data Generator</a></li></ul></li><li><a href="#z-open-editor-vs-code-extension" class="table-of-contents__link toc-highlight">Z Open Editor VS Code extension</a><ul><li><a href="#install-the-vs-code-extension" class="table-of-contents__link toc-highlight">Install the VS Code extension:</a></li><li><a href="#configure-the-extension" class="table-of-contents__link toc-highlight">Configure the extension</a></li></ul></li></ul></div></div></div></div></main></div></div></div><footer class="footer"><div class="container container-fluid"><div class="row footer__links"><div class="col footer__col"><div class="footer__title">Explore</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://www.ibm.com/" target="_blank" rel="noopener noreferrer" class="footer__link-item">IBM</a></li><li class="footer__item"><a href="https://www.ibm.com/client-engineering" target="_blank" rel="noopener noreferrer" class="footer__link-item">IBM Client Engineering</a></li><li class="footer__item"><a href="https://github.com/ibm-client-engineering" target="_blank" rel="noopener noreferrer" class="footer__link-item">IBM Client Engineering Solutions Hub</a></li></ul></div></div><div class="footer__bottom text--center"><div class="margin-bottom--sm"><a href="https://ibm.com" rel="noopener noreferrer" class="footerLogoLink_BH7S"><img src="https://www.ibm.com/brand/experience-guides/developer/8f4e3cc2b5d52354a6d43c8edba1e3c9/02_8-bar-reverse.svg" alt="IBM Logo" class="footer__logo themedComponent_mlkZ themedComponent--light_NVdE" width="200" height="150"><img src="https://www.ibm.com/brand/experience-guides/developer/8f4e3cc2b5d52354a6d43c8edba1e3c9/02_8-bar-reverse.svg" alt="IBM Logo" class="footer__logo themedComponent_mlkZ themedComponent--dark_xIcU" width="200" height="150"></a></div></div></div></footer></div>
+</body>
+</html>
