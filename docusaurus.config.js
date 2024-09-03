@@ -188,6 +188,7 @@ async function createconfig() {
         prism: {
           theme: require("prism-react-renderer").themes.oceanicNext,
           darkTheme: require("prism-react-renderer").themes.oceanicNext,
+          additionalLanguages: ['bash', 'yaml', 'java'],
         },
       }),
   };

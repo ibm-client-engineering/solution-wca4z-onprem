@@ -1,0 +1,136 @@
+---
+title: Transform
+description: How to transform Cobol to Java
+sidebar_position: 3
+custom_edit_url: null
+---
+
+# Transform
+
+To begin, first follow the directions under Understand to [Create an AD Project](/understand#create-ad-project).
+
+## Obtain Sample Code
+
+2. Clone a sample code repository to your local disk from the [IBM public genapp repo](ttps://github.com/cicsdev/cics-genapp)
+    1. Open command prompt
+    2. Go to the C drive:
+    ```bash
+    cd C:\
+    ```
+    3. Clone the repository:
+    ```bash
+    git clone https://github.com/cicsdev/cics-genapp.git
+    ```
+    4. This will clone the GenApp Application to your local workstation. You get prompted to select a suitable folder. Using this example you would end up with *\<folder\cics-genapp\>*.
+    
+3. Update the ADDI SyncFile.txt file to synchronize the ADDI project with the checked-out git repository
+Add the below content to the SyncFile.txt file (Assuming you cloned the git repo on C:\ path, make sure the paths of the Cobol Programs and Copybooks are correct). Replace ProjectName by your created ADDI project, e.g. “GenApp”.
+```
+* <ProjectName>
+<ProjectName>,LOCAL_REMOTE,C:\folder\cics-genapp\Cobol Programs,zOS Cobol,COBOL_MVS filter(*.cbl)
+<ProjectName>,LOCAL_REMOTE,C:\folder\cics-genapp\Copybooks,Cobol Include,
+COPY
+```
+4. Update Sync.txt file location on AD dashboard. Open **AD Dashboard** -> **Configure Tab** -> **Install Configurations Tab** -> **IBM Application Discovery Build Client install Configuration**
+    1. Make sure *Enable members synchronization *is checked
+    2. Update *Path for members synchronization Configuration file* with the path and name to your Sync.txt file
+    3. If you did a change, click **Save**
+5. Open the AD Build Client Application, Right Click on Project, and select *Synchronise Members*.
+    1. Expected result: Files are automatically synchronized to the *zOS Cobol* and *Cobol Include* folders of your project
+6. Then build the project.
+    1. Click **Build** -> **Build Project**
+    2. In the dialog *Do you want to run the CHECK project first?*, click **No**
+    3. In the dialog *You are about to build the whole project*, click **Yes**, and wait until the Built has finished.
+7. Create a File service mapping for the project
+    1. In the ADDI Dashboard, go to **Configure** -> click the *name of your environment* -> **Services** -> **File Service**
+    2. Click on **Add** to add a new mapping (if the mapping is not already there)
+    3. In the dialog paste the (same) path to your project (e.g *C:\<folder>\cics-genapp*) into both fields, *remote* and *local*
+    4. Click **Save** on the dialog
+    5. Click **Save** on the Mappings page
+    6. Go to the ADDI Dashboard
+    7. Restart the File service
+    8. Expected result:
+        1. Mapping is saved
+        2. File service restarts and comes back Online
+
+
+### Preparing the COBOL service for Transformation
+
+Add the COBOL service to the Git repo in a new branch.
+1. If you haven’t done so, clone the Git repository to your local workstation e.g. wca4z-extracted-services repo
+2. Create a new branch with a name unique to you.
+        ```bash
+        git branch <branch-name> 
+        ```
+    2. Add the COBOL program to the Cobol programs folder
+    3. Add the copybooks that are listed in the copybooks.txt file (this file is included in the export ZIP file from Refactoring Assistant). You have to manually add the copybooks for now.
+3. Add the DDL to the DDL folder.
+4. Use the command line or VS Code UI to git add, git commit, and git push the files in the branch to the remote repo:
+    ```bash
+    git add <new-files>
+    git commit -m "Added programs and copybooks, preparing for transformation"
+    git push
+    ```
+
+At this point, you have a COBOL service and DDL in the Git repository on the server. You can now run the automation script to update the ADDI project and 
+the Cloud Db2 database with the metadata about the COBOL service. Note that the data generator also handles the DDL.
+
+### Run Automation Script
+Now that you’ve populated the Git repo, you can run the automation script to update the ADDI project and run the Data generator tool. 
+The data generator will take the extracted service that your prepared in the previous step.
+
+1. Open a command prompt and navigate to the data generator folder:
+    ```bash
+    cd "C:\Program Files\IBM Application Discovery and Delivery Intelligence\WCA4Z Data Generator"
+    ```
+2. Run the automation script:
+    ```bash
+    automation.bat
+    ```
+3. If you get an error, consult the `runControlFlowGenerator.log` file, that contains the output of the script execution
+
+Now that the metadata for the COBOL service is in the Cloud Db2 database, you are ready to transform the COBOL service to Java.
+
+### Generate Java Identifiers and Java Method
+
+You have some choices about how to set up VS Code to do the transformation. You can use different projects to show a COBOL developer versus a Java developer working in different repositories or you can do everything in one project. Just bear in mind that you have the COBOL in a git repo, so it’s up to you if you want to commit Java back to that or not. For more details on the different options, see:
+https://www.ibm.com/docs/en/watsonx-code-assistant-4z/1.0topic=transform-transforming-cobol-java-by-using-generative-ai
+
+1. Start VS Code and open the Git repo in VS Code
+    1. In VS Code, go to **Explorer** -> **Open Project**
+    2. Select the *wca4z-extracted-services* folder
+    3. If you get a pop-up *Do you trust the authors of files in this folder?*, click **Yes, I trust the authors**
+    4. Expected result: The project is opened in VS Code and you see the folders “Cobol
+    Programs”, “Copybooks”, “DDL” populated with your COBOL service files.
+2. In the IBM watsonx Code Assistant for Z view, select the COBOL file and click Generate Java Identifiers.
+    1. In the *Explorer* sidebar of VS Code, go to **Cobol Programs**
+    2. Right click on the \<filename\>.cbl file -> **watsonx Code Assistant for Z** -> **Select COBOL for translation**
+    3. Expected result:  In the section titled “IBM watsonx Code Assistant for Z”, two options appear: 
+        1. Generate Java Identifiers
+        2. Generate Java Methods
+    4. Click **Generate Java Identifiers**
+3. In the first input box, specify the folder location to store the generated Java classes.
+4. In the second input box, specify the Java package name for the generated Java classes.
+5. The Java Identifiers view opens. Here you can rename *classes*, *variables*, and *methods*. 
+    :::warning
+    Be aware that currently this is the only time you can modify these names. Changing the names after you generate the classes 
+    and before you do the generation of the Java business logic will mean that the generation won’t work.
+    :::
+6. Perform one of the following actions:
+    1. **Save** to store the current mappings to local storage.
+    2. Select **Generate Java Identifiers** to create the Java class files. A VS Code
+    notification appears when generation is completed.
+
+### Generate Method Content
+
+After Java classes were generated, you can open them in the editor and generate method content one by one.
+
+1.	In the Code Assistant view, expand a COBOL file and click Generate Methods, which opens a code preview view in the VS Code.
+2.	Open a generated Java file and select the name of an empty method.
+3.	Right click to open the menu and select **IBM watsonx Code Assistant for Z** > **Generate Method**
+4.	Review the generated Java code in the code preview view.
+5.	You can optionally click the name of the COBOL program file in the view to open and compare with the code that you are converting from.
+6.	Click **Insert** to add the generated method code to the Java class.
+7.	Right-click in the Java editor and select *Format Document*
+8.	Use the Java development tools to fix any missing imports by clicking the red squiggles of any error you see in the editor and clicking the yellow code action light bulb. 
+A menu is opened with the **Import \<class\>** action to fix the issue if you provided the respective dependencies for your project as described in [preparing your development workspace](#preparing-the-cobol-service-for-transformation)

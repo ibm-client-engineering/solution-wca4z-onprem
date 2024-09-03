@@ -1,0 +1,384 @@
+---
+title: Linux VM Setup
+description: Software Setup and Configuration for Refactor
+sidebar_position: 2
+custom_edit_url: null
+---
+
+# Linux VM Setup
+
+## Installing and setting up on premise infrastructure
+The recommended order for installing and setting up the solution is:
+
+1. Install ADDI in a Windows VM (following the ADDI cookbook this will get you to the
+point of setting up the server, front end, and creating a project).
+2. Install Refactoring Assistant in a Linux VM.
+3. Configure the two products to connect securely.
+4. Provision an IBM watsonx Code Assistant service in IBM Cloud, including creating the
+Db2 database.
+5. Create an API key to access the watsonx Code Assistant service.
+6. Configure ADDI to use the Cloud Db2 database.
+7. Set up the Data Generator for transformation.
+8. Install Visual Studio Code and add the Z Open Editor extension and Language Support
+for Java extension.
+9. Run through the end to end scenario.
+
+## Installing ADDI
+As mentioned earlier, the process for Installing ADDI is explained in the ADDI cookbook. After you have installed and set up ADDI, you are ready to install and configure the Refactoring Assistant.
+
+## Installing the Refactoring Assistant:
+
+1. Log in in your RHEL 8.x env via SSH e.g: 
+    ```bash
+    ssh root@<your-test-host-name>
+    ```
+2. By default, you are in the /root directory. Download the latest Refactoring Assistant (either directly on the RHEL VM or move it there afterwards).
+3. Extract the tar file:
+    ```bash    
+    tar -xzvf <refactoring-assistant_file_version>.tgz
+    ```  
+4. Move the refactoring assistant outside to the root folder
+    ```bash
+    mv <path_to_refactoring_assistant> /root/refactoring-assistant
+    ```
+5. You should now have a new directory /root/refactoring-assistant. Navigate to that directory there: 
+    ```bash
+    cd /root/refactoring-assistant
+    ```
+6. Run the setup file
+    ```bash
+    ./setup.sh
+    ```
+
+:::info
+**You may need to expose port 9443 for the Refactoring Assistant Web UI**
+:::
+
+
+### Configuring Refactoring Assistant
+
+:::danger WAIT!
+You need an ADDI environment ID before continuing with the RA configuration.
+:::
+
+1. In your RHEL 8.x env go to:
+    ```bash
+    cd /root/refactoring-assistant
+    ``` 
+2. Create a configuration from the template by copying and then editng it:
+    ```bash
+    cp config/template.properties config/config.properties
+    ```
+3. Then update config/config.properties as follow:
+    ```java title='config.properties'  
+    CERTS_LOCATION=/root/certificate
+    PROTOCOL=https
+    AD_HOST_PORT=<FQDN Address of your Windows VM>:2181
+    ENVIRONMENT_ID=<Your ADDI Environment ID>
+    DEX_HOST_PORT=
+    ```      
+Important details on these fields.
+
+- **CERTS_LOCATION** - Absolute path to directory where certificates and keys are kept. These items will need to be created
+- **PROTOCOL** - Protocol to use to communicate with AD services
+- **AD_HOST_PORT** - The IBM AD configuration (ZooKeeper) connection string, e.g. \<hostname.mydomain.com\>:2281 ( use port 2181 if connection is unsecured )
+- **ENVIRONMENT_ID** - The environment ID, which can be obtained from the IBM Application Discovery Configuration Service Admin dashboard, more details on this webpage
+https://www.ibm.com/docs/en/addi/latest?topic=configuring-by-using-ad-configuration-service
+- **DEX_HOST_PORT** - The location of the DEX authentication server, defaults to $PROTOCOL://$AD_HOST:7600 if unset
+
+Additional properties you can add to this file are listed below:
+
+- Ports of the AD mainframe projects and file services respectively
+    ```
+    AD_PROJ_PORT=7650
+    AD_FILE_PORT=7700
+    ```
+- Outbound mail settings to enable email notifications
+    ``` 
+    MAIL_HOST=
+    MAIL_PORT=
+    MAIL_USERNAME=
+    MAIL_PASSWORD=
+    ```     
+- Extra Java mail properties, which can be specified by using MAIL_PROPERTIES_ prefix followed by the property name with dot separators replaced by underscores
+    ```
+    MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
+    ```  
+- If your system has Security-Enhanced Linux (SELinux) feature enabled, you need to add the following additional property
+    ```
+    RA_MOUNT_OPTIONS=:Z
+    ```
+*Make sure you save and confirm your changes.*
+```bash
+cat config/config.properties
+```
+<!-- 5. Go to: 
+```bash
+cd /root/refactoring-assistant
+```
+6. To prepare the required certificates to connect securely run: 
+```bash
+./start.sh --prepare-only /root/certificate
+```
+
+7. From /root/certificate copy the root.crt certificate to your Windows VM
+    1. In your Windows env, use PowerShell and use a command like this :
+    ```bash
+    scp root@<your-host-Lin>:/root/certificate/root.crt C:\Users\Administrator\Downloads
+    ``` -->
+
+### Additional RA settings using HTTPS
+1.	In your RHEL 8.x test env go to: cd /root/refactoring-assistant
+2.	To prepare the required certificates, run ./start.sh --prepare-only /root/certificate
+3.	From /root/certificate, copy the root.crt certificate to your Windows VM
+    1.	In your Windows env, use PowerShell and use a command like this :
+        ```bash
+        scp root@<your-host-Lin>:/root/certificate/root.crt C:\Users\Administrator\Downloads
+        ``` 
+4.	Continue with the ADDI setup on section Prepare Security Certificates for ADDI and RA, step #8 - Once completed that section, resume here(you should have the zookeeper certificate by then)
+5.	Take the zookeeper.crt certificate, copy it two times and name the copies “ad.crt” and “dex.crt”
+6.	Edit the config.properties configuration file to match these conditions:
+    ```bash
+    PROTOCOL=https
+    Change the port number of AD_HOST_PORT to 2281
+    ```
+7.	Restart RA
+    :::warning
+    < stop.sh all > will stop all the services including the database store, deleting all the files in your project. Use < ./stop.sh > without the all flag to stop only the RA service
+    :::
+    ```bash
+    ./stop.sh all
+    ./start.sh
+    ``` 
+### Configure ADDI(DEX)
+1.	In your ADDI Windows env, go to https://localhost:9443/ad/admin/configure?tab=environments and locate the ADDI Environment ID 
+2.	Go to C:\Program Files\IBM Application Discovery and Delivery Intelligence\Authentication Server (DEX)\conf\ and edit the dex.yaml file
+3.	Edit the issuer value to be: `https://localhost:7600/dex`
+4.	Add the following to the list of static clients:
+    ```java
+    staticClients:
+    -
+    id: refactoring-assistant
+    redirectURIs:
+    - https://<your RA Linux hostname>:9443
+    name: Refactoring Assistant
+    secret: pkce
+    ```
+There are further settings for Authentication Server (DEX) in the “Enable Security in ADDI Dashboard” section, for now don’t worry about the status of DEX.
+
+### Prepare Security Certificates for ADDI and RA
+1. Download and install prerequisites
+    1. Download the SSL certificate (DigiCertGlobalRootCA) to your Windows VM
+    2. You can find the link to download the SSL certificate in the email sent you with your access details in the DB2 section.
+        :::tip
+        For an integration test team, look in your ```\Downloads``` for something like ```DigiCertGlobalRootCA_wca4z-int-test-db2-<-suffix>.crt```
+        :::
+2. Generate a public and private key pair using the Java keytool utility:
+    1. Open a command prompt terminal and navigate to the Downloads directory
+    2. Replace the FQDN of your Windows VM in the command below and execute it.
+        ```bash
+        keytool 
+        -genkeypair 
+        -alias "<FQDN of your Windows VM>"
+        -keyalg RSA -keysize 2048 
+        -dname "cn=< FQDN of your Windows VM>" 
+        -keypass password 
+        -keystore server_keystore.p12 
+        -storepass password 
+        -storetype PKCS12 
+        -ext BasicConstraints:critical=ca:true 
+        -ext san=dns:<FQDN of your Windows VM>
+        ```
+        :::note
+        By default, such certificates are valid for only 90 days. Passing an additional argument ```-validity 366``` will extend the validity of the self-signed certificate to a year (in general: to the given number of days)
+        :::
+    A keystore file should be generated. **Example location:** ```C:\Users\Administrator\Downloads\server_keystore.p12```
+3. Export the certificate:
+    ```bash
+    keytool 
+    -exportcert 
+    -alias "<FQDN of your Windows VM>" 
+    -keystore "server_keystore.p12"
+    -file "server_certificate.crt" 
+    -storepass "password"
+    ```
+    You should get certificate stored in file ```<server_certificate.crt>``` in the directory you're working on.
+4. Re-import the certificate into the keystore:
+    ```bash
+    keytool -keystore server_keystore.p12 -import -file "server_certificate.crt" -alias "self-signed-root"
+    Enter keystore password: <”password” is your password>
+    Certificate already exists in keystore under alias <FQDN of VM>
+    Do you still want to add it? [no]: yes
+    ```
+    You should recieve a prompt stating: ```"Certificate was added to keystore"```
+5. Use the openSSL command prompt to generate the server.key file:
+    ```bash
+    openssl pkcs12 -in server_keystore.p12 -nocerts -nodes -out server.key
+    Enter Import Password: password
+    ```
+    A server key file should be generated. **Example location:** ```C:\Users\Administrator\Downloads\server.key```
+6. To generate the server_certificate.crt file run the following command:
+    ```bash
+    keytool -list -keystore server_keystore.p12 -rfc > server_certificate.crt
+    Enter Keystore Password: password
+    ``` 
+7. Import the Db2 SSL certificate into the keystore:
+    ```bash
+    keytool -import -trustcacerts -alias "DB2-ssl-cert" -file <path to the DigiCertGlobalRootCA downloaded from Db2> -keystore server_keystore.p12 -storepass password
+    Certificate already exists in system-wide CA keystore under alias <digicertglobalrootca [jdk]>
+    Do you still want to add it to your own keystore? [no]: yes
+    Certificate was added to keystore
+    ```        
+    1. Import the root.crt into the keystore - You can download root.crt from your RA Linux machine to your Windows env with the command:
+        ```bash
+        scp root@<your-host-Win>:/root/certificate/root.crt C:\Users\Administrator\Downloads
+
+        keytool -importcert -alias ad-core-server -keystore "server_keystore.p12" -file root.crt -storepass password -ext BasicConstraints:critical=ca:true -ext san=dns:<FQDN of your Windows VM>
+        Trust this certificate? [no]: yes
+        ```
+8. Install the DigiCertGlobalRootCA, the ```server_certificate.crt``` and the ```root.crt``` (from the RA setup) into the Windows VM’s trusted root certificate authorities.
+#### For all three certificates:
+1. Right-click the certificate and select ```Install certificate```
+2. If ```Security Warning``` is displayed, select ```Open```, otherwise continue with the next step
+3. Select ```Local Machine```, select ```Next```
+4. Select  ```Place all certificates in the following store```
+5. Click ```Browse…```
+6. Select ```Trusted Root certificate authorities```
+7. Click ```OK```, then ```Next```
+8. Click ```Finish``` ( you’ll see pop up alert stating “The import was successful.” )
+    1. The pop-up message takes some time. to be displayed. Select ```OK```.
+9. Install the ```DigiCertGlobalRootCA```, the ```server_certificate.crt``` and the ```root.crt``` into Java’s cacerts keystore:
+    1. Open a command prompt in the directory containing the new ```server_keystore.p12```
+    2. Enter the following command to import all certificates from the server_keystore into the cacerts keystore:
+        ```bash
+            keytool -importkeystore -srckeystore "server_keystore.p12" -srcstorepass "password" -destkeystore "%JAVA_HOME%\lib\security\cacerts" -deststorepass "changeit"
+
+            Importing keystore server_keystore.p12 to C:\Program
+            Files\OpenLogic\jre-11.0.20.8-hotspot\lib\security\cacerts...
+            Entry for alias <…hostname…> successfully imported.
+            Entry for alias self-signed-root successfully imported.
+            Entry for alias db2-ssl-cert successfully imported.
+            Entry for alias ad-core-server successfully imported.
+            Import command completed: 4 entries successfully imported, 0
+            entries failed or cancelled
+        ```
+        :::note
+        cacerts location could be different depending on your Java installation. In Openlogic Java 11 the cacerts are found in
+        ```
+        %JAVA_HOME%\lib\security\cacerts v/s
+        %JAVA_HOME%\jre\lib\security\cacerts
+        ```
+        :::
+    3. From the ADDI dashboard ( ```https://localhost:9443/ad/admin/dashboard``` ), restart the “Configuration service”
+10. Get the ```zookeeper.crt``` certificate
+    ```bash
+    keytool -exportcert -alias "<FQDN of your Windows VM>" -keystore "server_keystore.p12" -rfc -file zookeeper.crt -storepass password -ext BasicConstraints:critical=ca:true -ext san=dns:<FQDN of your Windows VM>
+    ```    
+11. Copy the ```zookeeper.crt``` file to ```/root/certificate``` on your RHEL VM.
+    1. From your Windows env, you can upload ```zookeeper.crt``` with the following command on PowerShell terminal:
+        ```bash
+        scp C:\Users\Administrator\Downloads\zookeeper.crt root@<Your-Linux-FQDN>:/root/certificate/
+        ```
+At this point you’re ready to finish setting up the HTTPS connection and certificates for the Refactoring Assistant.
+
+### Finishing the configuration of Refactoring Assistant to use HTTPS
+
+1. Take the ```zookeeper.crt``` certificate, copy it two times and name the copies ```ad.crt``` and ```dex.crt```
+2. Restart RA
+    ```bash
+    ./stop.sh all
+    ./start.sh
+    ```
+3. When asked for the OrientDB password, enter ```inittest```
+
+## Enabling security in the ADDI Dashboard
+1. In the ADDI dashboard, go to ```Configure``` -> ```<environment-name>``` -> ```General``` and check that the “IP or host” field has the FQDN of your Windows VM
+2. Next, go to ```Servers and security``` -> ```Security```
+3. Select ```Protocol``` type ```HTTPS```
+4. Drag and drop the below files from your Windows File Explorer to your web browser under the Security and certificate files
+    ```       
+    server_keystore.p12
+    server.key
+    server_certificate.crt
+    ```  
+5. After selecting the files, enter “password” for the keystore password
+6. Click ```Save``` then ```OK``` ( this step may take some time)
+7. Your dex.yaml file should now looks like this:
+    ```yaml title="dex.yaml"        
+            schemaVersion: 0
+            issuer: https://localhost:7600/dex
+            storage:
+            type: sqlite3
+            config:
+            file: dex.db
+            frontend:
+            theme: addi
+            web:
+            https: 0.0.0.0:7600
+            TLSCert: C:\Program Files\IBM Application Discovery and Delivery
+            Intelligence\security\<…hash-path-goes-here…>\server_certificate.crt
+            TLSKey: C:\Program Files\IBM Application Discovery and Delivery
+            Intelligence\security\<…hash-path-goes-here…>\server.key
+            oauth2:
+            skipApprovalScreen: true
+            passwordConnector: ldap
+            connectors: []
+            staticClients:
+            -
+            id: refactoring-assistant
+            redirectURIs:
+            - https://<your RA Linux FQDN>:9443
+            name: Refactoring Assistant
+            secret: pkce
+            enablePasswordDB: true
+            staticPasswords:
+            -
+            email: tester@servicedesigner.com
+            hash: $2a$12$m2dGtrCtc320uPbjgIOydeYxjePRhPU3WZ34z4CF.iK7oiYcEwRwe
+            username: null
+            userID: null
+    ```        
+    :::tip
+    If your DEX service does not start, have a look at `C:\Program Files\IBM Application Discovery and Delivery Intelligence\Authentication Server (DEX)\dex.log`
+    :::
+8. Restart services by navigating to the ADDI dashboard and selecting the three dots next to the service.
+    1. From the ADDI dashboard restart the following:
+        1. Authentication Server (DEX)
+        2. File Service
+    2. From the start menu, find and open the Services system app
+    3. Select ```IBM Application Discovery WebSphere Liberty Profile Service``` and restart it (the ADDI dashboard might be unavailable even some time after the WebSphere Liberty Service is shown as Running again)
+
+## Configuring AD Analyze for TLS
+By default, the IBM AD Analyze Client runs in unencrypted mode. The ADDI cookbook doesn’t cover steps to use TLS support. So if you want to securely connect to the server from the IBM AD Analyze Client with TLS support, you need to perform the following steps:
+
+1. Make sure HTTPS is configured from the Security Page in the IBM ADDI Dashboard.
+2. Close the Eclipse Analyze Client
+3. Go to the location where you unzipped the Eclipse package, for example ```C:\eclipse```
+4. Open ```eclipse.ini``` file and add the following lines, in the ```-vmargs``` section (if vmargs section is missing you can add new one). **Avoid blank lines in the ```-vmargs``` section.**
+    ```java title='eclipse.ini -vmargs'        
+            -Dzookeeper.client.secure=true
+            -Dzookeeper.ssl.keyStore.location=<the location on disk where the keystore was stored>
+            -Dzookeeper.ssl.keyStore.password=<keystore password>
+            -Dzookeeper.ssl.trustStore.location=<the location on disk where the truststore was stored>
+            -Dzookeeper.ssl.trustStore.password=<truststore password>
+            -Dclient.ssl.enabled=true
+            -Djavax.net.ssl.keyStore=<the location on disk where the keystore was stored>
+            -Djavax.net.ssl.keyStorePassword=<keystore password>
+            -Djavax.net.ssl.trustStore=<the location on disk where the truststore was stored>
+            -Djavax.net.ssl.trustStorePassword=<truststore password>
+    ```
+    :::note
+    The security keystore you add to Analyze Client needs to be configured with the Fully Qualified Domain Name of the Server VM in the Subject (CN) and Subject Alternative Name (SAN) fields. If IP address is used with the security certs then you might hit the following error message in Analyze Client:
+    `Caused by: java.security.cert.CertificateException: No subject alternative names matching IP address 9.46.97.193 found`
+    :::
+5. Save and close the file
+6. Restart Eclipse/Analyze Client
+7. In Eclipse go to ```Window``` -> ```Preferences``` -> ```Application Discovery``` -> ```Environment``` sections
+8. Update below data with TLS information (You can get Environment ID and Name from the ADDI Dashboard in the Configure tab):    
+    ```java
+    Host: <FQDN of the Windows VM>
+    Port: 2281
+    Unique ID: <ADDI Environment ID>
+    Name: <ADDI Environment Name>
+    ```
+9. Restart Eclipse/Analyze Client
