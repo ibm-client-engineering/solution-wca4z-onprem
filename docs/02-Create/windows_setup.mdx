@@ -57,6 +57,10 @@ Recommended SQL server version is [SQL Server 2019](https://www.microsoft.com/en
 ### Recommendations gathered from install experience
 - SQL Server Express 2019 or 2022 will work for practice and quick projects
 
+:::info
+**You may need to expose port 1433 for SQL Server**
+:::
+
 ### Installation steps
 1. Run the installer you've downloaded.
 ![](/img/sql_server_installation.png)
@@ -138,6 +142,10 @@ If you are going to deploy Refactoring Assistant, then you must install the DEX 
 9. On the Setup Shortcuts page, select the shortcuts that you want to create, and then click **Next**.
 
 The installation will take several minutes to complete. Once the installation is complete successfully, a web page will pop-up with which you can proceed to the configuration stage. It is extremely important not to shut down or restart the VM before this stage. 
+
+:::info
+Be aware that **you may need to expose port 2281 for ADDI** (before you add certs and set up SSL/TLS the port is 2181, but you may not need to expose it)
+:::
 
 ## Configuring by using IBM AD Configuration Wizard
 

@@ -112,3 +112,57 @@ If you already have RA installed but want to reinstall it:
         :::note
         You don’t need to do the “Additional sections using HTTPS” again
         :::
+
+## BetaNXT Project
+We did an install for BetaNXT of ADDI and Refactoring Assistant for a WCA4Z project. This is a overview of the issues we encountered and the solutions we came up with. We also propose improvements to the existing documentation to avoid these issues in the future. 
+
+### DEX_HOST_PORT 
+#### **Problem**
+The documentation calls to set the variable `DEX_HOST_PORT` to use `https` however in the slack support channel, people are saying to leave it blank. We could not get it to work when we set it to `https` but leaving it blank it worked. 
+#### **Solution** 
+Leave the `DEX_HOST_PORT` blank
+
+### Configuring IBM Application Discovery
+We need to be using the fully qualified domain name. We had tried to use the IP address, but we were getting errors so we went back to replace the ip address with the domain name.
+This required us to restart the services
+
+### Getting the FQDN to correctly populate the AD_HOST_PORT
+#### **Problem**
+We were running into issues because we were using the static IP addresses for the VMs to populate the AD_HOST_PORT environment variable. The documentation states to use the domain name, but we figured they were interchangeable. They are not. So we needed to figure out how to find the hostnames of the respective machines
+
+#### **Solution**
+In the linux machine we used the command `hostnamectl` to pull up the domain name
+In the windows machine we used the GUI and went into control panel => Device manager
+
+
+### Provisioning Watson Code Assistant
+#### **Problem**
+The Techzone instance doesn't seem to give us the option to provision a dedicated instance with the intent to use "non-regulated customer data" like we get when we provision other techzone instances such as governance. 
+
+#### **Solution**
+We're still trying to solve this issue
+
+### First install didn't include the Occurrences per file properly
+Renate reinstalled and followed the install wizard and it sorted the issue. We're not really sure why it wasn't working.
+
+### Make sure the refactoring assistant is loading properly
+#### **Problem**
+When we run `podman logs` we're seeing an SSL cert error. We're troubleshooting what is causing that.  
+
+### VM Problems
+The VM's we were initially trying to install ADDI and Refactoring assistant weren't really communicating effectively. So a first inital test that we recommend is as soon as you have the environment is that you ping from one VM to the other to ensure that you have open communications because everything else hinges on that. 
+
+### Installing ADDI
+As you're doing a custom install of SQL Server Express 2022, in the GUI, choose the custom install option. As you make your way through the install, at the very top there is a default profile option. Also, Toward the very end of the install, you can opt to select both Microsoft AND SQL authentication during the install. That will alleviate some of the manual steps later. 
+
+### Installing Refactoring Assistant
+The Cookbook and the Documentation site sometimes have discrepancies. For example, The DEX_HOST_PORT problem we ran into is correct in the online documentation but broken in the cookbook. 
+We needed to add `RA_MOUNT_OPTIONS=:Z` to the config.properties file.
+
+On the Windows VM in the dex.yaml file, step 7 of page 12 of the cookbook, we deleted the connectors from the dex.yaml file to better match what was in the documentation.
+
+In step 8, in the eclipse tool, it mentions going into the dashboard to configure. You need to update everything in the GUI. If you're using HTTPS vs HTTP, you need to update the port from `2181` to `2281`. To get there you need to go into **Double Click on Environment Settings** It looks like its a header but it is it's own menu.
+
+In the official online Documentation, step 6, it says "Copy the ADDI certificate to the directory `/etc/pki/ca-trust/source/anchors` on the Linux and run the following command `update-ca-trust`
+
+There also is no sanity check in the documentation to make sure everything is working. The default password is `password` when connecting to the refactoring assistant. 
